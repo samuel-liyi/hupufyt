@@ -1,0 +1,42 @@
+Title:
+==
+此处略去500字
+
+## overall statistics
+
+```{r echo=FALSE}
+setwd('~/Documents/projects/git/hupufyt/')
+d<-read.table(file='./summary/data.txt')
+author_cnt<-sort(table(d$author),decreasing=T)
+```
+
+这里的数据一共收录了12949篇文章，当时收集的时候主要是根据文章的加色来简单判断的，所以其中难免存在一些多余或者是遗漏（特别是早期的一些文章加色上还没有十分统一)，但我想信这对总体的数据影响还属于可以接受的程度。
+
+### 一些事实
+
+* 这里收录的最早的一篇文章 [资源集束器][first],其实这个并不是翻译帖子，不过当时也被加了蓝色，所以就被收进来了。
+
+[first]: http//bbs.hupu.com/48786.html   
+
+* 12949篇帖子一共有1947个ID,平均每个id发帖6.65篇
+
+* 在所有的id中，发帖前十的十大id是：
+
+```{r results='asis',warning=FALSE,echo=FALSE}
+x=author_cnt[1:10]
+top10<-cbind(names(x),as.vector(x))
+colnames(top10)<-c('id','作品数')
+library(hwriter)
+cat(hwrite(top10, col.names=T, border=1))
+barplot(as.numeric(top10[,2]),main="Top 10 译者",names.arg=top10[,1],col=rainbow(10),cex.names=0.68,las=2)
+```
+
+* 前100名的译者一共翻译了4387篇帖子，占到了全部作品的33.88%，超过了1/3, 和著名的2/8定律相比，前20%的译者翻译了8752篇，占到全部帖子的66%
+
+* Gini coefficient
+
+* 活跃时间最长的译者是：
+
+* 单月翻译产出的最高记录是： 2008年8月份的 rayallen9 贡献了45篇作品
+
+*
