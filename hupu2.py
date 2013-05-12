@@ -1,21 +1,44 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from pyquery import PyQuery as pq
+import mechanize
 import MySQLdb as mdb
-import re
+#import re
 import sys
 reload(sys)
-#sys.setdefaultencoding("utf8")
-fyt = "http://bbs.hupu.com/fyt-1"
-d = pq(url=fyt)
+sys.setdefaultencoding("utf8")
+#fyt = "http://bbs.hupu.com/fyt-1"
+#d = pq(url=fyt)
 #pageno=d("div.page").eq(-2).html()+0
 pageno = 3                                 
 pages = []
 res = []
-for i in range(101,600):
-        tmp=pq(url="http://bbs.hupu.com/fyt-"+str(i))
+# init browser
+br = mechanize.Browser()
+br.set_handle_robots(False)   # ignore robots
+br.set_handle_refresh(False)  # can sometimes hang without this
+response = br.open("http://passport.hupu.com/login")
+br.form = list(br.forms())[0] 
+name = br.form.find_control("username")
+passwd= br.form.find_control("password")
+name.value="asterisk"
+passwd.value=""
+response=br.submit()
+#init the mysqldb
+con = None
+con = mdb.connect('localhost', 'asterisk', 'pass', 'test1',charset="utf8")
+cur = con.cursor()
+cur.execute("SET NAMES utf8")
+cur.execute("create table if not exists test3 (name \
+varchar(50), url varchar(40),year int(4),month int(2),day \
+int(2),author varchar(20)) \n default character set=utf8")
+con.commit()
+
+for i in range(1,100): 
+	url="http://bbs.hupu.com/fyt-"+str(i)
+	response=br.open(url)
+        tmp=pq(response.read())
         for j in range(len(tmp.find('td.p_title'))):
-                
                 tmp1=[]
                 title='翻译团'
                 tmp2=tmp.find('td.p_title').eq(j)
@@ -42,10 +65,15 @@ for i in range(101,600):
                                                 tmp1.append("http//bbs.hupu.com"+tmp4.attr('href'))
                                                 tmp1+=[year,month,day]
                                                 tmp1.append(tmp2.next().find('a').text())
-                                                res.append(tmp1)
-                                                print tmp1[0]+"\t"+tmp1[1]
+                                                #res.append(tmp1)
+                                                #print tmp1[0]+"\t"+tmp1[1]
+						cur.execute ("""
+						       insert into test3 (name,url,year,month,day,author)
+						       values(%s,%s,%s,%s,%s,%s)
+						       """, (tmp1[0],tmp1[1],tmp1[2],tmp1[3],tmp1[4],tmp1[5]))
+						con.commit()
                         except Exception:
-                                j=j+1
+                                pass
                 else:
                         next
 
@@ -59,27 +87,8 @@ for i in range(101,600):
 
 #write to mysqldb
 #
-##con = None
-##
-##try:
-##    con = mdb.connect('localhost', 'asterisk', 'pass', 'test1',charset="utf8")
-##    cur = con.cursor()
-##    cur.execute("SET NAMES utf8")
-##    cur.execute("create table if not exists test2 (name \
-##    varchar(50), url varchar(40),year int(4),month int(2),day \
-##    int(2),author varchar(20)) \n default character set=utf8")
-##    con.commit()
-##    for i in range(len(res)):
-##        cur.execute ("""
-##                insert into test2 (name,url,year,month,day,author)
-##                values(%s,%s,%s,%s,%s,%s)
-##                """, (res[i][0],res[i][1],res[i][2],res[i][3],res[i][4],res[i][5]))
-##        con.commit()
-##except mdb.Error, e:
-##
-##  print "Error %d: %s" % (e.args[0],e.args[1])
-##  
-##finally:
-##      if con:
-##	    con.close()
+
+
+if con: 
+	con.close()
 
