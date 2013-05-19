@@ -1,12 +1,11 @@
-Title:
-==
-此处略去500字
+## Title
+## 此处略去500字
 
 ## overall statistics
 
 ```{r echo=FALSE}
 setwd('~/Documents/projects/git/hupufyt/')
-d<-read.table(file='./summary/data.txt')
+d<-read.table(file='./summary/data.txt',stringsAsFactors=FALSE)
 author_cnt<-sort(table(d$author),decreasing=T)
 ```
 
@@ -18,11 +17,11 @@ author_cnt<-sort(table(d$author),decreasing=T)
 
 [first]: http//bbs.hupu.com/48786.html   
 
-* 12949篇帖子一共有1947个ID,平均每个id发帖6.65篇
+* 12949篇帖子一共有1947个ID,平均每个id发帖6.65篇,标准差为10.74101,可以看出其实产量水平的差异还是很大的。
 
 * 在所有的id中，发帖前十的十大id是：
 
-```{r results='asis',warning=FALSE,echo=FALSE}
+```{r echo=FALSE,results='asis',warning=FALSE,echo=FALSE}
 x=author_cnt[1:10]
 top10<-cbind(names(x),as.vector(x))
 colnames(top10)<-c('id','作品数')
@@ -33,10 +32,45 @@ barplot(as.numeric(top10[,2]),main="Top 10 译者",names.arg=top10[,1],col=rainb
 
 * 前100名的译者一共翻译了4387篇帖子，占到了全部作品的33.88%，超过了1/3, 和著名的2/8定律相比，前20%的译者翻译了8752篇，占到全部帖子的66%
 
-* Gini coefficient
-
-* 活跃时间最长的译者是：
+* 时间跨度最长的译者是：
+LAL 他的第一篇译作可以追溯到2005年，而他在2012年依然还曾经有过作品产出，是所有译者里面时间跨度最长（单以发帖而论）
 
 * 单月翻译产出的最高记录是： 2008年8月份的 rayallen9 贡献了45篇作品
 
-*
+* 历年翻译作品冠军
+```{r echo=FALSE,results='asis',warning=FALSE,echo=FALSE}
+tmp=d[,c(3,6)]
+x1=apply(table(tmp),1,which.max)
+x2=apply(table(tmp),1,max)
+x3=colnames(table(tmp))
+author_by_y=cbind(x3[x1],x2)
+colnames(author_by_y)=c('id','作品数')
+cat(hwrite(author_by_y, col.names=T, border=1))
+```
+
+* 月度数据的趋势图
+
+```{r echo=FALSE}
+ plot(1:12,table(d$month),type='o')
+ 
+```
+
+* 年度数据的图
+
+```{r echo=FALSE}
+plot(1:9,table(d$year),type='o')
+plot(1:31,table(d$day),type='o')
+```
+
+* 每个月产出最高最低的一天,比较平均，不显著，星期的？数据可能会比较有意思
+
+* 标题最长的
+Berry Tramel: 续约 Kevin Durant 可以使Sam Presti 继续留在俄城
+http://bbs.hupu.com/1414959.html
+
+
+* author_cnt 的气泡图
+
+* 动态页面
+
+* timeline
