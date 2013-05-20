@@ -1,5 +1,8 @@
-## Title
-## 此处略去500字
+虎扑翻译团作品粗略整理
+=============
+
+这个其实是一时兴起做的一些东西，之前是因为每周统计翻译团的作品，所以为了省事，写了个小脚本来抓取每周翻译团lounge翻译出来的作品，后来就想到其实可以在此基础上对翻译团所有历史翻译的作品抓下来做点分析(这就是计算机的好处了，做一次和做一百次对你来说可能是很麻烦的事情，但是对电脑来说只是个时间的问题)。简单说一些这里抓取的原则，大家都知道翻译团的帖子审稿完成移出去之后都会标成蓝色，所以我抓取的就是翻译团lounge版面里面所有被标成蓝色的帖子。
+
 
 ## overall statistics
 
@@ -10,6 +13,8 @@ author_cnt<-sort(table(d$author),decreasing=T)
 ```
 
 这里的数据一共收录了12949篇文章，当时收集的时候主要是根据文章的加色来简单判断的，所以其中难免存在一些多余或者是遗漏（特别是早期的一些文章加色上还没有十分统一)，但我想信这对总体的数据影响还属于可以接受的程度。
+
+这里的数据已经全部传到了[google doc](https://docs.google.com/spreadsheet/ccc?key=0ArfSjsQRWyiJdGN5M0NOc0M5MlNUVFYxRzVMLWwzSlE&usp=sharing)里面，欢迎大家一起研究分析
 
 ### 一些事实
 
@@ -31,11 +36,18 @@ barplot(as.numeric(top10[,2]),main="Top 10 译者",names.arg=top10[,1],col=rainb
 ```
 
 * 前100名的译者一共翻译了4387篇帖子，占到了全部作品的33.88%，超过了1/3, 和著名的2/8定律相比，前20%的译者翻译了8752篇，占到全部帖子的66%
+```{r echo=FALSE,results='asis',warning=FALSE,echo=FALSE}
+x=c(rep(1,10),rep(2,40),rep(3,50),rep(4,1847))
+slice=sapply(split(author_cnt,x),sum)
+lbl=paste(c('Top 10','11 to 50','51 to 100','The Rest'),paste(round(slice/sum(slice)*100),'%',sep=''))
+library(plotrix)
+pie3D(slice,labels=lbl,cex=0.4,main='翻译团产出分布')
+```
 
 * 时间跨度最长的译者是：
-LAL 他的第一篇译作可以追溯到2005年，而他在2012年依然还曾经有过作品产出，是所有译者里面时间跨度最长（单以发帖而论）
+[LAL](http://my.hupu.com/599)他的第一篇译作可以追溯到[2005年](http://bbs.hupu.com/52564.html)，而他在[2012年](http://bbs.hupu.com/3837073.html)依然还曾经有过作品产出，是所有译者里面时间跨度最长（单以发帖而论）
 
-* 单月翻译产出的最高记录是： 2008年8月份的 rayallen9 贡献了45篇作品
+* 单月翻译产出的最高记录是： 2008年8月份的 [rayallen9](http://my.hupu.com/rayallen9)贡献了45篇作品
 
 * 历年翻译作品冠军
 ```{r echo=FALSE,results='asis',warning=FALSE,echo=FALSE}
@@ -50,27 +62,35 @@ cat(hwrite(author_by_y, col.names=T, border=1))
 
 * 月度数据的趋势图
 
-```{r echo=FALSE}
- plot(1:12,table(d$month),type='o')
+```{r echo=FALSE,warning=FALSE}
+ plot(table(d$month),type='o',ylab="产量",main="每月历史总产量")
  
 ```
 
 * 年度数据的图
 
-```{r echo=FALSE}
-plot(1:9,table(d$year),type='o')
-plot(1:31,table(d$day),type='o')
+```{r echo=FALSE,warning=FALSE}
+ plot(table(d$year),type='o',ylab="产量",main="每年历史总产量")
+
 ```
 
-* 每个月产出最高最低的一天,比较平均，不显著，星期的？数据可能会比较有意思
+* 每月1-31日每天的历史总产量
 
-* 标题最长的
-Berry Tramel: 续约 Kevin Durant 可以使Sam Presti 继续留在俄城
-http://bbs.hupu.com/1414959.html
+```{r echo=FALSE,warning=FALSE}
+ plot(table(d$day),type='o',ylab="产量",main="每天历史总产量")
+```
 
 
+* 标题最长的......
+[Berry Tramel: 续约 Kevin Durant 可以使Sam Presti 继续留在俄城](http://bbs.hupu.com/1414959.html)
+
+
+p.s.: 之所以是这个最长的是因为直接取的字符串的长度，也就是一个汉字和一个字母地位相等，so....这个不太合理，怎么计数还要想想
+
+<!---
 * author_cnt 的气泡图
 
 * 动态页面
 
 * timeline
+--->
